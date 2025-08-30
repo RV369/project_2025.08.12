@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+docker-compose.microtik_test.yml
+remote_file.npk
+routeros-7.19.4.npk

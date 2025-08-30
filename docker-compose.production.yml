@@ -1,0 +1,40 @@
+
+services:
+  web:
+    image: rv369/project_2025.08.12:latest
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    env_file:
+      - .env
+    restart: always
+
+  routers:
+       container_name: "mikrotik"
+       image: ghcr.io/im-ecorp/mikrotik-routeros:latest
+       privileged: true
+       cap_add:
+          - NET_ADMIN
+       devices:
+          - /dev/net/tun
+       depends_on:
+          - web
+  nginx:
+    build: 
+      context: ./infra/
+      dockerfile: Dockerfile
+    ports:
+      - "21:21"    #ftp
+      - "22:22"    #ssh
+      - "23:23"    #telnet
+      - "80:80"    #http
+      - "443:443"  #https
+      - "1194:1194"  #OVPN
+      - "1450:1450"  #L2TP
+      - "8291:8291"  #winbox
+      - "8728:8728"  #api
+      - "8729:8729"  #api-ssl
+      - "13231:13231"  #WireGuard
+      - "2122:2122"
+      - "8000:8000"
+    depends_on:
+      - web
+    restart: always
