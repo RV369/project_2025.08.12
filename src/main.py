@@ -2,7 +2,7 @@ import io
 from ftplib import FTP
 from typing import Annotated
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
 
 from config import settings
@@ -27,7 +27,7 @@ async def ftp_connect(
     with io.BytesIO(file_content) as image:
         ftp.storbinary(f'STOR {name}', image)
     ftp.quit()
-    return '<h2>Файл загружен успешно</h2>'
+    return '<h2>«Успешно»</h2>'
 
 
 @app.post('/file')
@@ -36,7 +36,7 @@ async def upload(
     ip_address: Annotated[str, Form()],
 ):
     if file.content_type != 'application/octet-stream':
-        raise HTTPException(400, detail='Invalid document type')
+        return HTMLResponse(content='<h2>«Неуспешно»</h2>')
     try:
         file_content = await file.read()
         html_content = await ftp_connect(
@@ -46,8 +46,8 @@ async def upload(
             file_content,
             file.filename,
         )
-    except Exception as e:
-        raise HTTPException(f'{e}', detail='Ошибка загрузки файла')
+    except:
+        return HTMLResponse(content='<h2>«Неуспешно»</h2>')
     return HTMLResponse(content=html_content)
 
 
