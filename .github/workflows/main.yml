@@ -10,7 +10,7 @@ jobs:
       - name: Install dependencies
         run: pip install flake8==7.3.0 flake8-isort==6.1.2
       - name: Test with flake8
-        run: python -m flake8 ./src
+        run: python -m flake8 .
       - name: Check out the repo
         uses: actions/checkout@v3
       - name: Set up Docker Buildx
