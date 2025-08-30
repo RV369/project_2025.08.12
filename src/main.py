@@ -36,6 +36,7 @@ async def upload(
     ip_address: Annotated[str, Form()],
 ):
     if file.content_type != 'application/octet-stream':
+        print(f'{file.content_type} -неверный тип файла')
         return HTMLResponse(content='<h2>«Неуспешно»</h2>')
     try:
         file_content = await file.read()
@@ -46,7 +47,8 @@ async def upload(
             file_content,
             file.filename,
         )
-    except:
+    except Exception as e:
+        print(f'{e} Ошибка загрузки файла')
         return HTMLResponse(content='<h2>«Неуспешно»</h2>')
     return HTMLResponse(content=html_content)
 
