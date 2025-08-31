@@ -21,12 +21,16 @@ async def ftp_connect(
     name: str,
     port: int = 2122,
 ) -> str:
-    ftp = FTP()
-    ftp.connect(host=hostname, port=port)
-    ftp.login(username, password)
-    with io.BytesIO(file_content) as image:
-        ftp.storbinary(f'STOR {name}', image)
-    ftp.quit()
+    try:
+        ftp = FTP()
+        ftp.connect(host=hostname, port=port)
+        ftp.login(username, password)
+        with io.BytesIO(file_content) as image:
+            ftp.storbinary(f'STOR {name}', image)
+        ftp.quit()
+    except Exception as e:
+        print(f'{e} Ошибка загрузки файла')
+        return '<h2>«Неуспешно»</h2>'
     return '<h2>«Успешно»</h2>'
 
 
@@ -38,18 +42,14 @@ async def upload(
     if file.content_type != 'application/octet-stream':
         print(f'{file.content_type} -неверный тип файла')
         return HTMLResponse(content='<h2>«Неуспешно»</h2>')
-    try:
-        file_content = await file.read()
-        html_content = await ftp_connect(
-            ip_address,
-            login,
-            password,
-            file_content,
-            file.filename,
-        )
-    except Exception as e:
-        print(f'{e} Ошибка загрузки файла')
-        return HTMLResponse(content='<h2>«Неуспешно»</h2>')
+    file_content = await file.read()
+    html_content = await ftp_connect(
+        ip_address,
+        login,
+        password,
+        file_content,
+        file.filename,
+    )
     return HTMLResponse(content=html_content)
 
 
